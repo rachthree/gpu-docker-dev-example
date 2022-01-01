@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+  build-env:
+    build:
+      context: .
+      dockerfile: .build/Dockerfile
+      args:
+        TF_VER: ${TF_VER:-latest-gpu}
+        PYTORCH_VER: ${PYTORCH_VER:-torch==1.10.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html}
+    image: dev-env
+
+  dev-env:
+    image: dev-env
+    container_name: dev-env
+    restart: always
+    volumes:
+      - type: bind
+        source: /home
+        target: /home
+      - type: bind
+        source: /mnt
+        target: /mnt
+      - type: bind
+        source: /etc/passwd
+        target: /etc/passwd
+        read_only: true
+    user: ${UID}:${GID}
+    ports:
+      - "127.0.0.1:${PORT:-8888}:8888"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    shm_size: 2gb

@@ -1,0 +1,4 @@
+transformers<5.0
+jupyterlab
+pydot
+pyyaml
